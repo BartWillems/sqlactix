@@ -1,0 +1,34 @@
+---
+version: "3.4"
+
+services:
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_DB: "sqlactix"
+      POSTGRES_USER: "sqlactix"
+      POSTGRES_PASSWORD: "secret"
+      TZ: "Europe/Brussels"
+    ports:
+      - 5432:5432
+    networks:
+      - sqlactix
+    volumes:
+      - sqlactix:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - "CMD"
+        - "pg_isready"
+        - "-d"
+        - "sqlactix"
+        - "-U"
+        - "sqlactix"
+      timeout: 30s
+      interval: 10s
+      retries: 10
+
+volumes:
+  sqlactix:
+
+networks:
+  sqlactix:
