@@ -1,3 +1,6 @@
+//!
+#![warn(missing_debug_implementations, rust_2018_idioms, missing_docs)]
+
 #[macro_use]
 extern crate log;
 
@@ -15,6 +18,10 @@ mod error;
 mod stats;
 mod todos;
 
+pub(crate) struct State {
+    pub(crate) db: Pool<Postgres>,
+}
+
 #[actix_web::main]
 async fn main() -> Result<()> {
     dotenv().ok();
@@ -29,8 +36,12 @@ async fn main() -> Result<()> {
     // info!("completed");
 
     HttpServer::new(move || {
+        let state = State {
+            db: db_pool.clone(),
+        };
+
         App::new()
-            .data(db_pool.clone())
+            .data(state)
             .wrap(middleware::Logger::default())
             .configure(todos::routes)
             .configure(stats::routes)

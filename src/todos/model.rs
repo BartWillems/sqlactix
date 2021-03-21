@@ -12,9 +12,7 @@ impl Todo {
     pub(crate) async fn create(name: &str, pool: &Pool<Postgres>) -> Result<Todo, sqlx::Error> {
         let todo = sqlx::query_as!(
             Todo,
-            r#"
-            INSERT INTO todos (name) VALUES ($1) RETURNING *;
-            "#,
+            r"INSERT INTO todos (name) VALUES ($1) RETURNING *;",
             name
         )
         .fetch_one(pool)
@@ -38,15 +36,9 @@ impl Todo {
     }
 
     pub(crate) async fn load(pool: &Pool<Postgres>) -> Result<Vec<Todo>, sqlx::Error> {
-        let todo: Vec<Todo> = sqlx::query_as!(
-            Todo,
-            r#"
-            SELECT *
-            FROM todos
-            "#,
-        )
-        .fetch_all(pool)
-        .await?;
+        let todo: Vec<Todo> = sqlx::query_as!(Todo, r"SELECT * FROM todos",)
+            .fetch_all(pool)
+            .await?;
 
         Ok(todo)
     }
